@@ -1,15 +1,17 @@
 class Gomoku:
-    def __init__(self):
+    def __init__(self, size = 15, pieces_in_row_to_win = 5):
         """
-        Initialize the Gomoku game. Set up the game state with a 15x15 empty board,
+        Initialize the Gomoku game. Set up the game state with a size x size (15x15 by default) empty board,
         set the current player to 'X', and set `game_over` to False.
         """
-        self.size = 15
+        self.size = size
         self.board = [[' ' for _ in range(self.size)] for _ in range(self.size)]
         self.players = ['X', 'O']
         self.current_player = self.players[0]
         self.game_over = False
         self.winner = None  # Added winner to game state
+        self.pieces_in_row_to_win = pieces_in_row_to_win
+        self._empty_space = size*size
 
     def print_board(self):
         """
@@ -39,10 +41,16 @@ class Gomoku:
         if self.game_over or self.board[x][y] != ' ':
             return False
         self.board[x][y] = self.current_player
+        self._empty_space -= 1
         if self._check_winner(x, y):
             self.game_over = True
             self.winner = self.current_player
-            return f'Player {self.current_player} wins!'
+            # return f'Player {self.current_player} wins!'
+            return False
+        elif self._empty_space == 0:
+            self.game_over = True
+            self.winner = None
+            return False
         self.current_player = self.players[0] if self.current_player == self.players[1] else self.players[1]
         return True
 
@@ -78,7 +86,7 @@ class Gomoku:
         directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
 
         for dx, dy in directions:
-            if self._count_consecutive_pieces(x, y, dx, dy) == 5:
+            if self._count_consecutive_pieces(x, y, dx, dy) == self.pieces_in_row_to_win:
                 return True
 
         return False
@@ -151,4 +159,4 @@ class Gomoku:
 
 # Test the __init__ and get_game_state methods
 game = Gomoku()
-print(game.get_game_state())
+# print(game.get_game_state())

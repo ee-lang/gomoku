@@ -1,6 +1,7 @@
 
 from gomoku import Gomoku  # assuming gomoku.py is the file containing the Gomoku class
-from Player import Player, HumanPlayer  # assuming player.py is the file containing the Player classes
+from Player import Player, HumanPlayer, RandomPlayer, QLearningPlayer, QNNLearningPlayer  # assuming player.py is the file containing the Player classes
+from GomokuNet import GomokuNet
 import logging
 # Create a logger
 logger = logging.getLogger('gomoku_logger')
@@ -18,8 +19,8 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 class GomokuGame:
-    def __init__(self, player1, player2):
-        self.game = Gomoku()
+    def __init__(self, player1, player2, size = 15, pieces_in_row_to_win = 5):
+        self.game = Gomoku(size = size, pieces_in_row_to_win = pieces_in_row_to_win)
         # Map 'X' and 'O' to player1 and player2
         self.players = {'X': player1, 'O': player2}
 
@@ -47,14 +48,61 @@ class GomokuGame:
 
             # Check if the game has ended
             if self.game.get_game_state()['game_over']:
-                print(f"Player {self.game.get_game_state()['winner']} has won!")
-                logger.info(f"Player {self.game.get_game_state()['winner']} has won!")
-                break
+                winner = self.game.get_game_state()['winner']
+                if winner:
+                    print(f"Player {winner} has won!")
+                    logger.info(f"Player {winner} has won!")
+                    looser = self.players['O'] if 'X' == winner else self.players['X']
+                    self.players[winner].score(1.0)
+                    looser.score(0.0)
+                    break
+                else:
+                    print(f"Game ended in draw!")
+                    logger.info(f"Game ended in draw!")
+                    self.players['X'].score(0.5)
+                    self.players['O'].score(0.5)
+                    break
 
         print("Thank you for playing!")
 
 # To play the game, create two human players, an instance of GomokuGame with the players, and call the start_game method:
-player1 = HumanPlayer()
+# player1 = HumanPlayer()
 player2 = HumanPlayer()
-game = GomokuGame(player1, player2)
-game.start_game()
+# player1 = RandomPlayer()
+player1 = QLearningPlayer()
+
+# Load the Q-table from a file
+player1.load_q_table('q_table.pkl')
+
+# player2 = RandomPlayer()
+
+# import torch
+# import torch.optim as optim
+
+# # Create the neural network model
+# model = GomokuNet()
+# # Load the model weights
+# try:
+#     model.load_state_dict(torch.load("linear_model_weights.pth"))
+# except FileNotFoundError as e:
+#     print('Weight file not found.')
+
+# # Create an optimizer
+# optimizer = optim.Adam(model.parameters())
+
+# # Create a QNNLearningPlayer
+# player1 = QNNLearningPlayer(model, optimizer, device='cpu', gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995)
+
+# # Create a QNNLearningPlayer
+# player2 = QNNLearningPlayer(model, optimizer, device='cpu', gamma=0.99, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995)
+
+
+for _ in range(1):
+    game = GomokuGame(player1, player2, size=3, pieces_in_row_to_win=3)
+    game.start_game()
+
+# # Save the model weights
+# torch.save(model.state_dict(), "linear_model_weights.pth")
+
+# Save the Q-table to a file
+player1.save_q_table('q_table.pkl')
