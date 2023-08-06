@@ -145,7 +145,7 @@ import copy
 import random
 
 class QNNLearningPlayer(Player):
-    def __init__(self, model, optimizer, board_size=15, device='cpu', alpha=0.5, gamma=0.9, epsilon_start=0.5, epsilon_end=0.01, epsilon_decay=0.99, training=False, logger=None, batch_size=10):
+    def __init__(self, model, optimizer, board_size=15, device='cpu', alpha=0.5, gamma=0.9, epsilon_start=0.5, epsilon_end=1e-4, epsilon_decay=0.99, training=False, logger=None, batch_size=10):
         self.model = model  # the network model
         self.optimizer = optimizer  # the optimizer
         self.device = device  # 'cpu' or 'cuda'

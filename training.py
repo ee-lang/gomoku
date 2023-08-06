@@ -38,14 +38,14 @@ player2.load_q_table('q_table_p2.pkl')
 
 
 model=GomokuLFC1HNNet(input_size=3*3*3+1, hidden_size=32, output_size=9)
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-2)
 # Load the saved weights into the model
 try:
     model.load_state_dict(torch.load('GomokuLFC1HNNet_p1.pth'))
 except FileNotFoundError as e:
     print(e)
 
-player1 = QNNLearningPlayer(model=model, optimizer=optimizer, board_size=3, training=True, logger=logger)
+player1 = QNNLearningPlayer(model=model, optimizer=optimizer, epsilon_start=1e-4, board_size=3, training=True, logger=logger)
 player1.load_terminal_transactions()
 
 
@@ -89,7 +89,7 @@ player2.save_q_table('q_table_p2.pkl')
 
 # # Save the model state_dict() to a file
 torch.save(model.state_dict(), 'GomokuLFC1HNNet_p1.pth')
-player1.save_terminal_transactions()
+# player1.save_terminal_transactions()
 
 # Save the model state_dict() to a file
 # torch.save(model.state_dict(), 'GomokuLFC1HNNet_p2.pth')

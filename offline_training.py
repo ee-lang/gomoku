@@ -23,7 +23,7 @@ logger.addHandler(file_handler)
 
 
 model=GomokuLFC1HNNet(input_size=3*3*3+1, hidden_size=32, output_size=9)
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-2)
 # Load the saved weights into the model
 try:
     model.load_state_dict(torch.load('GomokuLFC1HNNet_p1.pth'))

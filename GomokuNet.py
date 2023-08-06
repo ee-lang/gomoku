@@ -26,13 +26,13 @@ class GomokuLFC1HNNet(nn.Module):
     def __init__(self, input_size=3*15*15+1, hidden_size=128, output_size=15*15):
         super(GomokuLFC1HNNet, self).__init__()
         self.fc1 = nn.Linear(input_size, hidden_size, dtype=torch.float32)  # Fully connected layer
-        self.fc_h = nn.Linear(hidden_size, hidden_size, dtype=torch.float32)  # Fully connected hidden layer
+        # self.fc_h = nn.Linear(hidden_size, hidden_size, dtype=torch.float32)  # Fully connected hidden layer
         self.fc2 = nn.Linear(hidden_size, output_size, dtype=torch.float32)  # Fully connected hidden layer
         # self.fc = nn.Linear()  # Fully connected layer
 
     def forward(self, x, action_mask = None):
         x = F.relu(self.fc1(x))
-        x = F.relu(self.fc_h(x))
+        # x = F.relu(self.fc_h(x))
         x = self.fc2(x)  # Compute Q-values
         # print('action_mask',action_mask)
         # x = torch.clip(x, min=-1.0, max=1.0)
